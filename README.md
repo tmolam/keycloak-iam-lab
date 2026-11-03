@@ -79,6 +79,32 @@ The current authentication flow works as follows:
 
 The application also provides a logout endpoint that clears the Flask session and redirects the user to Keycloak's logout endpoint.
 
+## Screenshots
+
+### 1. Keycloak Login
+
+The user is redirected to Keycloak to authenticate.
+
+![Keycloak Login](docs/screenshots/keycloak-login.png)
+
+### 2. Required Password Update
+
+Keycloak requires the user to update their password before continuing.
+
+![Password Update](docs/screenshots/password-update.png)
+
+### 3. Successful Authentication
+
+After successful authentication, the Flask application displays the authenticated user.
+
+![Successful Login](docs/screenshots/successful-login.png)
+
+### 4. Logout Confirmation
+
+The user is redirected to Keycloak's logout confirmation page.
+
+![Logout Confirmation](docs/screenshots/logout-confirmation.png)
+
 ## Security Considerations
 
 This project is intended for local learning and experimentation.
