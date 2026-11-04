@@ -172,11 +172,11 @@ The lab is intended to explore:
 Planned improvements:
 
 - [ ] Improve logout using ID token hints.
-- [ ] Add role-based access control (RBAC).
+- [X] Add role-based access control (RBAC).
 - [ ] Explore client scopes and protocol mappers.
 - [ ] Implement PKCE.
 - [ ] Explore token validation and expiration.
-- [ ] Add screenshots and technical documentation.
+- [X] Add screenshots and technical documentation.
 - [ ] Add automated tests.
 - [ ] Explore production-ready Keycloak configuration.
 
