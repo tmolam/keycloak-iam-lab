@@ -105,6 +105,40 @@ The user is redirected to Keycloak's logout confirmation page.
 
 ![Logout Confirmation](docs/screenshots/logout-confirmation.png)
 
+## Role-Based Access Control (RBAC)
+
+The application uses Keycloak realm roles to control access to protected Flask routes.
+
+### Configured Roles
+
+- **user** — Access to the user dashboard.
+- **admin** — Access to the admin dashboard and standard user functionality.
+
+### Role Assignments
+
+| Keycloak User | Assigned Role | Access |
+|---|---|---|
+| Alice | user | `/user` |
+| Bob | admin | `/admin` and `/user` |
+
+Administrators inherit standard user permissions through application-level role inheritance.
+
+### Access Control Tests
+
+| Test | Expected Result | Status |
+|---|---|---|
+| Alice accesses `/user` | Allowed | Passed |
+| Alice accesses `/admin` | Forbidden (403) | Passed |
+| Bob accesses `/admin` | Allowed | Passed |
+| Bob accesses `/user` | Allowed | Passed |
+
+### Implementation
+
+- Keycloak realm roles are included in the access token.
+- The Flask application validates the access token's signature and claims.
+- A reusable `role_required` decorator protects restricted routes.
+- Users without the required role receive an HTTP 403 response.
+
 ## Security Considerations
 
 This project is intended for local learning and experimentation.
