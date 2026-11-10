@@ -189,6 +189,33 @@ This demonstrates the separation of:
 - Docker Compose
 - PostgreSQL
 
+## OIDC Logout Integration
+
+Implemented logout integration between oauth2-proxy and Keycloak to terminate both the local proxy session and the Keycloak SSO session.
+
+### Configuration
+
+Configured oauth2-proxy with `OAUTH2_PROXY_BACKEND_LOGOUT_URL` to call Keycloak's OIDC logout endpoint using the session ID token:
+
+```yaml
+OAUTH2_PROXY_BACKEND_LOGOUT_URL: "http://keycloak:8080/realms/iam-lab/protocol/openid-connect/logout?id_token_hint={id_token}"
+```
+
+### Logout Test
+
+Verified the logout flow:
+
+1. User signs in through Keycloak.
+2. oauth2-proxy establishes a local session.
+3. User accesses the protected Flask application.
+4. User signs out through `/oauth2/sign_out`.
+5. oauth2-proxy clears its local session and invokes the Keycloak logout endpoint.
+6. On the next login attempt, Keycloak requests credentials again instead of silently reusing the previous SSO session.
+
+### Security Outcome
+
+This demonstrates coordinated session termination across the reverse proxy and identity provider, reducing the risk of leaving an active SSO session after application logout.
+
 ## Security Considerations
 
 This project is intended for local learning and experimentation.

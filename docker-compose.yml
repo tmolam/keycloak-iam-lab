@@ -77,6 +77,7 @@ services:
       OAUTH2_PROXY_OIDC_GROUPS_CLAIM: groups
       OAUTH2_PROXY_PASS_USER_HEADERS: "true"
       OAUTH2_PROXY_PASS_ACCESS_TOKEN: "true"
+      OAUTH2_PROXY_BACKEND_LOGOUT_URL: "http://keycloak:8080/realms/iam-lab/protocol/openid-connect/logout?id_token_hint={id_token}"
     depends_on:
       - keycloak
       - legacy-app
