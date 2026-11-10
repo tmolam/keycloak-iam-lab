@@ -139,6 +139,56 @@ Administrators inherit standard user permissions through application-level role 
 - A reusable `role_required` decorator protects restricted routes.
 - Users without the required role receive an HTTP 403 response.
 
+## Keycloak Authorization Services
+
+Integrated Keycloak Authorization Services with the legacy Flask application protected by oauth2-proxy.
+
+### Architecture
+
+- **Keycloak:** Centralized identity roles, resources, policies, and permissions.
+- **oauth2-proxy:** Handles OIDC authentication, sessions, and access-token forwarding.
+- **Flask legacy application:** Acts as a Policy Enforcement Point (PEP), requesting authorization decisions from Keycloak.
+
+### Authorization Configuration
+
+Created a dedicated `legacy-app` client in Keycloak and configured:
+
+- **Resource:** `admin-dashboard`
+- **Resource URI:** `/admin/*`
+- **Scope:** `view`
+- **Role-based policy:** `admin-role-policy`
+- **Permission:** `admin-dashboard-view-permission`
+
+The policy grants access to users assigned the `admin` realm role.
+
+### Authorization Tests
+
+| User | Realm Role | Result |
+|---|---|---|
+| Alice | `user` | 403 - Access Denied |
+| Bob | `admin` | 200 - Access Granted |
+
+### Security Design
+
+Authorization policies and role assignments are managed centrally in Keycloak rather than hardcoded in the Flask application.
+
+The Flask application enforces authorization decisions returned by Keycloak.
+
+This demonstrates the separation of:
+
+- **Policy Administration Point (PAP):** Manages authorization policies and permissions.
+- **Policy Decision Point (PDP):** Evaluates authorization requests.
+- **Policy Enforcement Point (PEP):** Enforces the authorization decisions.
+
+### Technologies
+
+- Keycloak Authorization Services
+- OpenID Connect (OIDC)
+- oauth2-proxy
+- Flask
+- Docker Compose
+- PostgreSQL
+
 ## Security Considerations
 
 This project is intended for local learning and experimentation.
@@ -171,14 +221,12 @@ The lab is intended to explore:
 
 Planned improvements:
 
-- [ ] Improve logout using ID token hints.
-- [X] Add role-based access control (RBAC).
-- [ ] Explore client scopes and protocol mappers.
-- [ ] Implement PKCE.
-- [ ] Explore token validation and expiration.
-- [X] Add screenshots and technical documentation.
-- [ ] Add automated tests.
-- [ ] Explore production-ready Keycloak configuration.
+- [x] Integrate Keycloak Authorization Services.
+- [x] Implement centralized resource-based authorization.
+- [ ] Improve logout using OIDC end-session.
+- [ ] Explore non-human identities and service accounts.
+- [ ] Explore Privileged Identity Management (PIM).
+- [ ] Integrate midPoint for Identity Governance and Administration (IGA).
 
 ---
 
