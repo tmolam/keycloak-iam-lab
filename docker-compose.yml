@@ -28,11 +28,58 @@ services:
       KC_DB_URL_DATABASE: ${POSTGRES_DB}
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_HOSTNAME: http://localhost:8081
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
     ports:
       - "127.0.0.1:8081:8080"
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - keycloak-network
+
+  legacy-app:
+    build: ./legacy-app
+    container_name: legacy-app
+    restart: unless-stopped
+    environment:
+      LEGACY_APP_CLIENT_ID: legacy-app
+      LEGACY_APP_CLIENT_SECRET: ${LEGACY_APP_CLIENT_SECRET}
+      LEGACY_APP_TOKEN_URL: http://keycloak:8080/realms/iam-lab/protocol/openid-connect/token
+      LEGACY_APP_AUTHZ_URL: http://keycloak:8080/realms/iam-lab/protocol/openid-connect/token
+    networks:
+      - keycloak-network
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest
+    container_name: oauth2-proxy
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4180:4180"
+    environment:
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_CLIENT_ID: oauth2-proxy
+      OAUTH2_PROXY_CLIENT_SECRET: ${OAUTH2_PROXY_CLIENT_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${OAUTH2_PROXY_COOKIE_SECRET}
+      OAUTH2_PROXY_OIDC_ISSUER_URL: http://localhost:8081/realms/iam-lab
+      OAUTH2_PROXY_LOGIN_URL: http://localhost:8081/realms/iam-lab/protocol/openid-connect/auth
+      OAUTH2_PROXY_REDIRECT_URL: http://localhost:4180/oauth2/callback
+      OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+      OAUTH2_PROXY_UPSTREAMS: http://legacy-app:5000/
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_SCOPE: openid profile email
+      OAUTH2_PROXY_CODE_CHALLENGE_METHOD: S256
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_SKIP_OIDC_DISCOVERY: "true"
+      OAUTH2_PROXY_REDEEM_URL: http://keycloak:8080/realms/iam-lab/protocol/openid-connect/token
+      OAUTH2_PROXY_OIDC_JWKS_URL: http://keycloak:8080/realms/iam-lab/protocol/openid-connect/certs
+      OAUTH2_PROXY_OIDC_GROUPS_CLAIM: groups
+      OAUTH2_PROXY_PASS_USER_HEADERS: "true"
+      OAUTH2_PROXY_PASS_ACCESS_TOKEN: "true"
+    depends_on:
+      - keycloak
+      - legacy-app
     networks:
       - keycloak-network
 
