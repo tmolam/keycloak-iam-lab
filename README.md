@@ -216,6 +216,16 @@ Verified the logout flow:
 
 This demonstrates coordinated session termination across the reverse proxy and identity provider, reducing the risk of leaving an active SSO session after application logout.
 
+## Identity Governance and Administration (IGA) – midPoint
+
+Configured Evolveum midPoint and integrated it with Keycloak using the OpenStandia Keycloak connector.
+
+- Deployed midPoint using Docker.
+- Connected midPoint to the Keycloak `iam-lab` realm.
+- Successfully imported test users (Alice and Bob) from Keycloak into midPoint.
+
+Future work: user provisioning, identity lifecycle management, and access governance.
+
 ## Security Considerations
 
 This project is intended for local learning and experimentation.
